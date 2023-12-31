@@ -20,7 +20,8 @@ class _ManageAccountsState extends State<ManageAccounts> {
   TextEditingController passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return SingleChildScrollView(
+        child: Column(
       children: [
         wTopMenu(
           context: context,
@@ -42,7 +43,10 @@ class _ManageAccountsState extends State<ManageAccounts> {
                 children: [
                   Text(
                     "Kembali",
-                    selectionColor: Colors.white,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
                   )
                 ],
               ),
@@ -127,7 +131,7 @@ class _ManageAccountsState extends State<ManageAccounts> {
           ),
         ),
         const SizedBox(height: 10),
-        Text(
+        const Text(
           'List Cabang',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
@@ -136,32 +140,20 @@ class _ManageAccountsState extends State<ManageAccounts> {
           future: fetchData(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Container(
-                height: MediaQuery.of(context).size.height * 0.4,
-                width: MediaQuery.of(context).size.width,
-                child: Expanded(
-                  child: Container(
-                    child: Text(
-                      'Loading ...',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white),
-                    ),
-                  ),
-                ),
+              return const Text(
+                'Loading ...',
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
               );
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {
-              return Expanded(
-                child: ListView(
-                  children: accounts,
-                ),
-              );
+              return Column(children: accounts);
             }
           },
         )
       ],
-    );
+    ));
   }
 
   Widget _itemCabang({
@@ -283,7 +275,6 @@ class _ManageAccountsState extends State<ManageAccounts> {
 
       // Assuming the response data is a list of menu items
       List<dynamic> responseData = response.data;
-      print(response.data);
 
       // Create _item widgets based on the fetched data
       accounts = responseData.map((itemData) {

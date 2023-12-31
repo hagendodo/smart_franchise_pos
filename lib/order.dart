@@ -129,21 +129,20 @@ class _CheckoutState extends State<Checkout> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      flex: 5,
+    return Container(
+      height: MediaQuery.of(context).size.height,
       child: Column(
         children: [
-          wTopMenu(action: Container(), context: context),
           const SizedBox(height: 20),
           menuItems.isEmpty
               ? FutureBuilder(
                   future: fetchData(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Container(
-                        height: MediaQuery.of(context).size.height * 0.4,
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.5,
                         width: MediaQuery.of(context).size.width,
-                        child: Container(),
+                        child: const CircularProgressIndicator(),
                       );
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
@@ -161,86 +160,101 @@ class _CheckoutState extends State<Checkout> {
                     children: menus,
                   ),
                 ),
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-              color: const Color(0xff1f2029),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.white,
-                  offset: Offset(0, -1), // Negative y offset for top shadow
-                  blurRadius: 3,
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Container(
+          menuItems.isNotEmpty
+              ? Container(
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: const Color.fromARGB(137, 92, 92, 92),
-                  ),
-                  child: TextField(
-                    controller: _nameController,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.only(bottom: 6, left: 12),
-                      hintText: 'Atas Nama',
-                      hintStyle: TextStyle(color: Colors.white54, fontSize: 14),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                        borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(14),
+                    color: const Color(0xff1f2029),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.white,
+                        offset:
+                            Offset(0, -1), // Negative y offset for top shadow
+                        blurRadius: 3,
                       ),
-                    ),
+                    ],
                   ),
-                ),
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 20),
-                  height: 2,
-                  width: double.infinity,
-                  color: Colors.white,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Total (PPN 10%)',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.white),
-                    ),
-                    Text(
-                      'Rp ${totalValue.toStringAsFixed(2)}', // Format the total value as needed
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
+                  child: Column(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: const Color.fromARGB(137, 92, 92, 92),
+                        ),
+                        child: TextField(
+                          controller: _nameController,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                          decoration: InputDecoration(
+                            contentPadding:
+                                EdgeInsets.only(bottom: 6, left: 12),
+                            hintText: 'Atas Nama',
+                            hintStyle:
+                                TextStyle(color: Colors.white54, fontSize: 14),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 20),
+                        height: 2,
+                        width: double.infinity,
                         color: Colors.white,
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 15),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepOrange,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Total',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                          Text(
+                            'Rp ${totalValue.toStringAsFixed(2)}', // Format the total value as needed
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 15),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepOrange,
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          _submitForm(context);
+                        },
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(width: 6),
+                            Text(
+                              'Pesan',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  onPressed: () {
-                    _submitForm(context);
-                  },
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [SizedBox(width: 6), Text('Pesan')],
-                  ),
-                ),
-              ],
-            ),
-          ),
+                )
+              : Container(),
         ],
       ),
     );
@@ -295,7 +309,7 @@ class _CheckoutState extends State<Checkout> {
                 Text(
                   formatCurrency(price),
                   style: const TextStyle(
-                    fontSize: 24,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.deepOrange,
                   ),
@@ -318,7 +332,7 @@ class _CheckoutState extends State<Checkout> {
                 setState(() {
                   for (int i = 0; i < menuItems.length; i++) {
                     if (menuItems[i].menuId == id) {
-                      menuItems[i].quantity = val;
+                      menuItems[i].quantity = val.toInt();
                       return;
                     }
                   }

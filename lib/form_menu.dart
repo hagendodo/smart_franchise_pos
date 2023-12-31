@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_franchise_pos/models/menu_form.dart';
 import 'package:smart_franchise_pos/services/user_data.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smart_franchise_pos/components/topmenu.dart';
@@ -8,18 +9,29 @@ import 'package:smart_franchise_pos/main.dart';
 import 'strings/environment.dart';
 
 class FormMenu extends StatefulWidget {
+  final MenuForm? menuForm;
+
+  const FormMenu({Key? key, this.menuForm}) : super(key: key);
+
   @override
-  _FormMenuState createState() => _FormMenuState();
+  _FormMenuState createState() => _FormMenuState(menuFormItem: menuForm);
 }
 
 class _FormMenuState extends State<FormMenu> {
   File? _image;
   final ImagePicker _picker = ImagePicker();
+  MenuForm? menuForm;
+
+  _FormMenuState({MenuForm? menuFormItem}) {
+    menuForm = menuFormItem;
+  }
 
   bool _uploadFromUrl = false;
   final _nameController = TextEditingController();
   final _priceController = TextEditingController();
   final _imageUrlController = TextEditingController();
+
+  bool _editMode = false;
 
   late Map<String, dynamic> userData;
 
@@ -32,152 +44,92 @@ class _FormMenuState extends State<FormMenu> {
   void _initUserData() async {
     await UserDataService.getUserData().then((data) {
       userData = data;
-      setState(() {});
+      setState(() {
+        if (menuForm != null) {
+          _nameController.text = menuForm?.name ?? "";
+          _priceController.text = menuForm?.price ?? "";
+          _imageUrlController.text = menuForm?.imageUrl ?? "";
+          _editMode = true;
+        }
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      wTopMenu(
-        context: context,
-        action: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const MainPage(
-                    movePage: "Menus",
+    return SingleChildScrollView(
+      child: Column(children: [
+        wTopMenu(
+          context: context,
+          action: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MainPage(
+                      movePage: "Menus",
+                    ),
                   ),
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              primary: Colors.deepOrange, // Button color
-            ),
-            child: const Row(
-              children: [
-                Text(
-                  "Kembali",
-                  selectionColor: Colors.white,
-                )
-              ],
-            ),
-          ),
-        ]),
-      ),
-      Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-          color: const Color(0xff1f2029),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.white,
-              offset: Offset(0, 1), // Negative y offset for top shadow
-              blurRadius: 1,
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.all(16),
-        margin: const EdgeInsets.only(left: 12, right: 12, top: 20),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Form Menu",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                primary: Colors.deepOrange, // Button color
               ),
-              SizedBox(height: 32),
-              Text(
-                "Nama Menu",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight:
-                      FontWeight.bold, // Adjust the font weight as needed
-                ),
-                textAlign: TextAlign.left,
-              ),
-              TextField(
-                controller: _nameController,
-                style: TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: 'xxxx',
-                  hintStyle: TextStyle(color: Colors.white54),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                ),
-              ),
-              SizedBox(height: 16),
-              Text(
-                "Harga",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight:
-                      FontWeight.bold, // Adjust the font weight as needed
-                ),
-                textAlign: TextAlign.left,
-              ),
-              TextField(
-                controller: _priceController,
-                style: TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: 'Rp. xxx',
-                  hintStyle: TextStyle(color: Colors.white54),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                ),
-              ),
-              SizedBox(height: 16),
-              Text(
-                "Upload Method",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.left,
-              ),
-              Row(
+              child: const Row(
                 children: [
-                  Text("From URL", style: TextStyle(color: Colors.white)),
-                  Switch(
-                    value: _uploadFromUrl,
-                    onChanged: (value) {
-                      setState(() {
-                        _uploadFromUrl = value;
-                      });
-                    },
-                  ),
-                  Text("From File", style: TextStyle(color: Colors.white)),
+                  Text(
+                    "Kembali",
+                    selectionColor: Colors.white,
+                  )
                 ],
               ),
-              SizedBox(height: 16),
-              if (!_uploadFromUrl) ...[
+            ),
+          ]),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            color: const Color(0xff1f2029),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.white,
+                offset: Offset(0, 1), // Negative y offset for top shadow
+                blurRadius: 1,
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.all(16),
+          margin: const EdgeInsets.only(left: 12, right: 12, top: 20),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Text(
-                  "Image URL",
+                  "Form Menu",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 32),
+                Text(
+                  "Nama Menu",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                    fontWeight:
+                        FontWeight.bold, // Adjust the font weight as needed
                   ),
                   textAlign: TextAlign.left,
                 ),
                 TextField(
-                  controller: _imageUrlController,
+                  controller: _nameController,
                   style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: 'https://example.com/image.jpg',
+                    hintText: 'xxxx',
                     hintStyle: TextStyle(color: Colors.white54),
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.white),
@@ -185,46 +137,117 @@ class _FormMenuState extends State<FormMenu> {
                   ),
                 ),
                 SizedBox(height: 16),
-              ] else ...[
-                GestureDetector(
-                  onTap: _getImage,
-                  child: Container(
-                    padding: const EdgeInsets.all(5),
-                    color: Colors.deepOrange,
-                    child: Text(
-                      'Choose Image',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
+                Text(
+                  "Harga",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight:
+                        FontWeight.bold, // Adjust the font weight as needed
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+                TextField(
+                  controller: _priceController,
+                  style: TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: 'Rp. xxx',
+                    hintStyle: TextStyle(color: Colors.white54),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
                     ),
                   ),
                 ),
                 SizedBox(height: 16),
-              ],
-              //buildImageWidget(),
-              const SizedBox(height: 16),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      _submitForm();
-                    },
-                    child: Text('Simpan'),
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.all(20),
-                      primary: Colors.deepOrange,
+                Text(
+                  "Upload Method",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+                Row(
+                  children: [
+                    Text("From URL", style: TextStyle(color: Colors.white)),
+                    Switch(
+                      value: _uploadFromUrl,
+                      onChanged: (value) {
+                        setState(() {
+                          _uploadFromUrl = value;
+                        });
+                      },
+                    ),
+                    Text("From File", style: TextStyle(color: Colors.white)),
+                  ],
+                ),
+                SizedBox(height: 16),
+                if (!_uploadFromUrl) ...[
+                  Text(
+                    "Image URL",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                  TextField(
+                    controller: _imageUrlController,
+                    style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: 'https://example.com/image.jpg',
+                      hintStyle: TextStyle(color: Colors.white54),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
                     ),
                   ),
+                  SizedBox(height: 16),
+                ] else ...[
+                  GestureDetector(
+                    onTap: _getImage,
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      color: Colors.deepOrange,
+                      child: Text(
+                        'Chooses Image',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16),
                 ],
-              )
-            ],
+                buildImageWidget(),
+                const SizedBox(height: 16),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        _editMode
+                            ? _editSubmitForm(menuForm?.idMenu)
+                            : _submitForm();
+                      },
+                      child: Text('Simpan'),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.all(20),
+                        primary: Colors.deepOrange,
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
           ),
-        ),
-      )
-    ]);
+        )
+      ]),
+    );
   }
 
   Widget buildImageWidget() {
@@ -240,16 +263,23 @@ class _FormMenuState extends State<FormMenu> {
       // For web, use Image.network
       return _image != null
           ? Image.network(
-              'your_image_url', // Replace with the actual image URL or Firebase Storage URL
+              _imageUrlController.text,
               height: 100,
               width: 100,
               fit: BoxFit.cover,
             )
-          : const Text(
-              'No image selected.',
-              style: TextStyle(color: Colors.white),
-              textAlign: TextAlign.left,
-            );
+          : (_imageUrlController.text != ""
+              ? Image.network(
+                  _imageUrlController.text,
+                  height: 100,
+                  width: 100,
+                  fit: BoxFit.cover,
+                )
+              : const Text(
+                  'No image selected.',
+                  style: TextStyle(color: Colors.white),
+                  textAlign: TextAlign.left,
+                ));
     }
   }
 
@@ -283,36 +313,33 @@ class _FormMenuState extends State<FormMenu> {
       return;
     }
 
-    // Create FormData
-    Map<String, dynamic> requestData = {
-      'userId': userData['userId'],
-      'kodeToko': userData['kodeToko'],
-      'name': _nameController.text,
-      'price': _priceController.text,
-    };
-
-    if (!_uploadFromUrl) {
-      // Use image URL from _imageUrlController
-      requestData['imageUrl'] = _imageUrlController.text;
-    } else {
-      // Use image from local file specified by _image
-      requestData['image'] = await MultipartFile.fromFile(
-        _image!.path,
-        filename: 'image.jpg',
-      );
-    }
-
     try {
-      Response response = await Dio().post(
+      String imageUrl;
+      if (!_uploadFromUrl) {
+        // Use image URL from _imageUrlController
+        imageUrl = _imageUrlController.text;
+      } else {
+        imageUrl = await _uploadImageToCloudinary();
+      }
+      // Upload image to Cloudinary
+
+      // Make your API call
+      Response apiResponse = await Dio().post(
         '$apiUrl/api/items',
-        data: requestData,
+        data: {
+          'userId': userData['userId'],
+          'kodeToko': userData['kodeToko'],
+          'name': _nameController.text,
+          'price': _priceController.text,
+          'imageUrl': imageUrl,
+        },
         options: Options(
           headers: {'Content-Type': 'application/json'},
         ),
       );
 
-      if (response.statusCode == 201) {
-        Navigator.push(
+      if (apiResponse.statusCode == 201) {
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => const MainPage(
@@ -324,6 +351,88 @@ class _FormMenuState extends State<FormMenu> {
     } catch (error) {
       // Handle the error
       print('Error: $error');
+    }
+  }
+
+  Future<void> _editSubmitForm(id) async {
+    // Validate form fields
+    if (_nameController.text.isEmpty || _priceController.text.isEmpty) {
+      // Show an error message or handle validation as needed
+      return;
+    }
+
+    try {
+      String imageUrl;
+
+      if (!_uploadFromUrl) {
+        // Use image URL from _imageUrlController
+        imageUrl = _imageUrlController.text;
+      } else {
+        imageUrl = await _uploadImageToCloudinary();
+      }
+
+      // Upload image to Cloudinary
+
+      // Make your API call
+      Response apiResponse = await Dio().patch(
+        '$apiUrl/api/items/$id',
+        data: {
+          'name': _nameController.text,
+          'price': _priceController.text,
+          'imageUrl': imageUrl,
+        },
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (apiResponse.statusCode == 200) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const MainPage(
+              movePage: "Menus",
+            ),
+          ),
+        );
+      }
+    } catch (error) {
+      // Handle the error
+      print('Error: $error');
+    }
+  }
+
+  Future<String> _uploadImageToCloudinary() async {
+    try {
+      // Create Dio instance
+      Dio dio = Dio();
+
+      // Create FormData for image upload
+      FormData formData = FormData.fromMap({
+        'upload_preset': 'xhyhvxib', // Replace with your upload preset
+        'file': await MultipartFile.fromFile(
+          _image!.path,
+          filename: 'file.jpg',
+        ),
+      });
+
+      // Upload to Cloudinary
+      Response response = await dio.post(
+        'https://api.cloudinary.com/v1_1/dd9eegvnd/upload',
+        data: formData,
+      );
+
+      if (response.statusCode == 200) {
+        // Extract Cloudinary response data
+        final responseData = response.data;
+        return responseData['url']; // Return the Cloudinary URL
+      } else {
+        throw Exception('Failed to upload image to Cloudinary');
+      }
+    } catch (error) {
+      // Handle the error
+      print('Error uploading image to Cloudinary: $error');
+      throw error;
     }
   }
 }

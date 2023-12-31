@@ -4,6 +4,7 @@ import 'package:smart_franchise_pos/form_menu.dart';
 import 'package:smart_franchise_pos/history.dart';
 import 'package:smart_franchise_pos/login.dart';
 import 'package:smart_franchise_pos/manage_accounts.dart';
+import 'package:smart_franchise_pos/models/menu_form.dart';
 import 'package:smart_franchise_pos/models/order_data.dart';
 import 'package:smart_franchise_pos/order.dart';
 import 'package:smart_franchise_pos/home.dart';
@@ -35,39 +36,57 @@ class MyApp extends StatelessWidget {
 class MainPage extends StatefulWidget {
   final String movePage;
   final OrderData? menuDetail;
+  final MenuForm? menuForm;
 
-  const MainPage({Key? key, required this.movePage, this.menuDetail})
+  const MainPage(
+      {Key? key, required this.movePage, this.menuDetail, this.menuForm})
       : super(key: key);
 
   @override
-  State<MainPage> createState() =>
-      _MainPageState(movePage: movePage, menuDetail: menuDetail);
+  State<MainPage> createState() => _MainPageState(
+      movePage: movePage, menuDetail: menuDetail, menuFormItem: menuForm);
 }
 
 class _MainPageState extends State<MainPage> {
   String pageActive = "Login";
   OrderData? detailMenu;
+  MenuForm? menuForm;
   List<Widget> bottomMenusRole = [];
 
-  _MainPageState({required String movePage, OrderData? menuDetail}) {
+  _MainPageState(
+      {required String movePage,
+      OrderData? menuDetail,
+      MenuForm? menuFormItem}) {
     pageActive = movePage;
     detailMenu = menuDetail;
+    menuForm = menuFormItem;
   }
 
   late Map<String, dynamic> userData;
+  bool isInitUserData = true;
 
   @override
   void initState() {
     super.initState();
+    isInitUserData = false;
     _initUserData();
   }
 
   void _initUserData() async {
     userData = await UserDataService.getUserData();
     setState(() {});
+    isInitUserData = true;
   }
 
   _pageView() {
+    if (!isInitUserData) {
+      return SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: const CircularProgressIndicator(),
+      );
+    }
+
     if (userData['authStatus'] != "logged") {
       switch (pageActive) {
         case 'Login':
@@ -126,7 +145,7 @@ class _MainPageState extends State<MainPage> {
         case 'FormMenu':
         case 'Report':
         case 'ManageAccounts':
-          return HomePage();
+          return const MainPage(movePage: "Menus");
         default:
           pageActive == "Login" ? pageActive = 'Order' : '';
       }
@@ -136,7 +155,9 @@ class _MainPageState extends State<MainPage> {
       case 'Menus':
         return HomePage();
       case 'FormMenu':
-        return FormMenu();
+        return FormMenu(
+          menuForm: menuForm,
+        );
       case 'Order':
         return Checkout();
       case 'History':
@@ -160,11 +181,31 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
+  titleBar() {
+    if (!isInitUserData) {
+      return null;
+    }
+
+    return AppBar(
+      backgroundColor: const Color(0xff17181f),
+      title: const Text(
+        "Smart Franchise POS",
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xff1f2029),
-      body: Row(
+      appBar:
+          pageActive == "Login" || pageActive == "Register" ? null : titleBar(),
+      body: Column(
         children: [
           Expanded(
             child: Container(
@@ -180,7 +221,7 @@ class _MainPageState extends State<MainPage> {
       floatingActionButton: pageActive == "Menus"
           ? FloatingActionButton(
               onPressed: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                       builder: (context) => MainPage(
@@ -188,7 +229,10 @@ class _MainPageState extends State<MainPage> {
                           )),
                 );
               },
-              child: Icon(Icons.add),
+              child: Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
               backgroundColor: Colors.deepOrange,
             )
           : null,
@@ -204,14 +248,14 @@ class _MainPageState extends State<MainPage> {
 
   Widget _bottomMenu() {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.15,
+      height: MediaQuery.of(context).size.height * 0.13,
       padding: const EdgeInsets.only(top: 6, right: 12, left: 12),
       width: MediaQuery.of(context).size.width,
       child: GridView.count(
         crossAxisCount: 3,
         childAspectRatio: (1 / 1),
         physics:
-            NeverScrollableScrollPhysics(), // Set physics to disable scrolling
+            const NeverScrollableScrollPhysics(), // Set physics to disable scrolling
         children: bottomMenusRole,
       ),
     );

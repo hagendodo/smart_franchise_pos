@@ -29,7 +29,7 @@ Widget wTopMenu({
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                userData['namaToko'],
+                userData['namaToko'] ?? "",
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 20,

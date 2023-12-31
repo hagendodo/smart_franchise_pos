@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_franchise_pos/components/topmenu.dart';
 import 'package:smart_franchise_pos/main.dart';
+import 'package:smart_franchise_pos/models/menu_form.dart';
 import 'package:smart_franchise_pos/services/format_service.dart';
 import 'package:smart_franchise_pos/services/user_data.dart';
 import 'strings/environment.dart';
@@ -27,7 +28,8 @@ class _HomePageState extends State<HomePage> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Container(
-            height: MediaQuery.of(context).size.height,
+            height: MediaQuery.of(context).size.height * 0.5,
+            width: MediaQuery.of(context).size.width,
             child: CircularProgressIndicator(),
           );
         } else if (snapshot.hasError) {
@@ -50,8 +52,8 @@ class _HomePageState extends State<HomePage> {
                     ),
                     Expanded(
                       child: GridView.count(
-                          crossAxisCount: isMobile ? 2 : 3,
-                          childAspectRatio: isPC ? (2 / 1.4) : (1 / 1.4),
+                          crossAxisCount: isMobile ? 1 : 3,
+                          childAspectRatio: isPC ? (2 / 1.4) : (1 / 1),
                           children: menuItems),
                     ),
                   ],
@@ -118,6 +120,7 @@ class _HomePageState extends State<HomePage> {
     required String price,
   }) {
     return Container(
+      width: MediaQuery.of(context).size.width,
       margin: const EdgeInsets.only(left: 20, bottom: 20),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -168,14 +171,18 @@ class _HomePageState extends State<HomePage> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MainPage(
-                          movePage: "FormMenu",
-                        ),
-                      ),
-                    );
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MainPage(
+                            movePage: "FormMenu",
+                            menuForm: MenuForm(
+                                idMenu: id,
+                                imageUrl: image,
+                                name: title,
+                                price: price),
+                          ),
+                        ));
                   },
                   style: ElevatedButton.styleFrom(
                     primary: Colors.white,

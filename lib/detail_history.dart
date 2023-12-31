@@ -31,8 +31,7 @@ class _DetailHistoryState extends State<DetailHistory> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      flex: 5,
+    return SingleChildScrollView(
       child: Column(
         children: [
           wTopMenu(
@@ -55,7 +54,10 @@ class _DetailHistoryState extends State<DetailHistory> {
                   children: [
                     Text(
                       "Kembali",
-                      selectionColor: Colors.white,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
                     )
                   ],
                 ),
@@ -135,7 +137,7 @@ class _DetailHistoryState extends State<DetailHistory> {
                           fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                     Text(
-                      formatCurrency(itemMenu?.totalHarga ?? 0),
+                      formatCurrency(itemMenu?.totalHarga.toDouble() ?? 0),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -148,7 +150,7 @@ class _DetailHistoryState extends State<DetailHistory> {
           ),
           const SizedBox(height: 20),
           Expanded(
-            child: ListView(
+            child: Column(
               children: orderMenus,
             ),
           ),

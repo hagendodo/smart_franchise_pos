@@ -56,310 +56,335 @@ class _SettingsState extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      wTopMenu(
-        context: context,
-        action: FutureBuilder<bool>(
-          future: _checkKodeCabang(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              // While the Future is still running, you can show a loading indicator.
-              return Container();
-            } else if (snapshot.hasError) {
-              // If there's an error in the Future, handle it accordingly.
-              return Text('Error: ${snapshot.error}');
-            } else if (snapshot.data == true) {
-              // If the Future result is true, show the Column with Text and TextField.
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const MainPage(
-                                    movePage: "ManageAccounts",
-                                  )),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.deepOrange, // Button color
-                      ),
-                      child: const Row(
-                        children: [
-                          Text(
-                            "Manage Accounts",
-                            selectionColor: Colors.white,
-                          )
-                        ],
-                      ),
-                    ),
-                  ]),
-                ],
-              );
-            } else {
-              // If the Future result is false, don't show anything.
-              return Container();
-            }
-          },
-        ),
-      ),
-      Expanded(
-          child: Column(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-              color: const Color(0xff1f2029),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.white,
-                  offset: Offset(0, 1), // Negative y offset for top shadow
-                  blurRadius: 1,
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(16),
-            margin: const EdgeInsets.only(left: 12, right: 12, top: 20),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Profil Akun",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    "Kode Toko",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight:
-                          FontWeight.bold, // Adjust the font weight as needed
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
-                  TextField(
-                    controller: _kodeTokoController,
-                    readOnly: true,
-                    style: TextStyle(color: Colors.deepOrange),
-                    decoration: InputDecoration(
-                      hintText: 'Role',
-                      hintStyle: TextStyle(color: Colors.deepOrange),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent),
-                      ),
-                    ),
-                  ),
-                  FutureBuilder<bool>(
-                    future: _checkKodeCabang(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        // While the Future is still running, you can show a loading indicator.
-                        return Container();
-                      } else if (snapshot.hasError) {
-                        // If there's an error in the Future, handle it accordingly.
-                        return Text('Error: ${snapshot.error}');
-                      } else if (snapshot.data == false) {
-                        // If the Future result is true, show the Column with Text and TextField.
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+    return SingleChildScrollView(
+        child: Column(children: [
+      Column(children: [
+        wTopMenu(
+          context: context,
+          action: FutureBuilder<bool>(
+            future: _checkKodeCabang(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                // While the Future is still running, you can show a loading indicator.
+                return Container();
+              } else if (snapshot.hasError) {
+                // If there's an error in the Future, handle it accordingly.
+                return Text('Error: ${snapshot.error}');
+              } else if (snapshot.data == true) {
+                // If the Future result is true, show the Column with Text and TextField.
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MainPage(
+                                      movePage: "ManageAccounts",
+                                    )),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.deepOrange, // Button color
+                        ),
+                        child: const Row(
                           children: [
-                            SizedBox(height: 16),
                             Text(
-                              "Kode Cabang",
+                              "Manage Accounts",
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
                               ),
-                              textAlign: TextAlign.left,
-                            ),
-                            TextField(
-                              readOnly: true,
-                              controller: _kodeCabangController,
-                              style: TextStyle(color: Colors.deepOrange),
-                              decoration: InputDecoration(
-                                hintText: "Nama Cabang",
-                                hintStyle: TextStyle(color: Colors.white54),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
-                                ),
-                              ),
-                            ),
+                            )
                           ],
-                        );
-                      } else {
-                        // If the Future result is false, don't show anything.
-                        return Container();
-                      }
-                    },
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    "Username",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
-                  TextField(
-                    controller: _usernameController,
-                    style: TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: 'Username',
-                      hintStyle: TextStyle(color: Colors.white54),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
+                        ),
                       ),
-                    ),
-                  ),
-                  FutureBuilder<bool>(
-                    future: _checkKodeCabang(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        // While the Future is still running, you can show a loading indicator.
-                        return Container();
-                      } else if (snapshot.hasError) {
-                        // If there's an error in the Future, handle it accordingly.
-                        return Text('Error: ${snapshot.error}');
-                      } else if (snapshot.data == true) {
-                        // If the Future result is true, show the Column with Text and TextField.
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 16),
-                            Text(
-                              "Password",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.left,
-                            ),
-                            TextField(
-                              controller: _passwordController,
-                              obscureText: true,
-                              style: TextStyle(color: Colors.white),
-                              decoration: InputDecoration(
-                                hintText: 'Password',
-                                hintStyle: TextStyle(color: Colors.white54),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      } else {
-                        // If the Future result is false, don't show anything.
-                        return Container();
-                      }
-                    },
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    "Status",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight:
-                          FontWeight.bold, // Adjust the font weight as needed
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
-                  TextField(
-                    controller: _roleController,
-                    readOnly: true,
-                    style: TextStyle(color: Colors.deepOrange),
-                    decoration: InputDecoration(
-                      hintText: 'Role',
-                      hintStyle: TextStyle(color: Colors.deepOrange),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent),
-                      ),
-                    ),
-                  ),
-                  FutureBuilder<bool>(
-                    future: _checkKodeCabang(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        // While the Future is still running, you can show a loading indicator.
-                        return Container();
-                      } else if (snapshot.hasError) {
-                        // If there's an error in the Future, handle it accordingly.
-                        return Text('Error: ${snapshot.error}');
-                      } else if (snapshot.data == true) {
-                        // If the Future result is true, show the Column with Text and TextField.
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    _submitForm();
-                                  },
-                                  child: Text('Simpan'),
-                                  style: ElevatedButton.styleFrom(
-                                    padding: EdgeInsets.all(20),
-                                    primary: Colors.deepOrange,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        );
-                      } else {
-                        // If the Future result is false, don't show anything.
-                        return Container();
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ),
+                    ]),
+                  ],
+                );
+              } else {
+                // If the Future result is false, don't show anything.
+                return Container();
+              }
+            },
           ),
-          Container(
-            margin: const EdgeInsets.only(top: 20),
-            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              ElevatedButton(
-                  onPressed: () {
-                    _logoutProcess();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      side: const BorderSide(
-                        color: Colors.deepOrange,
-                        width: 2,
+        ),
+        SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    color: const Color(0xff1f2029),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.white,
+                        offset:
+                            Offset(0, 1), // Negative y offset for top shadow
+                        blurRadius: 1,
                       ),
-                      borderRadius: BorderRadius.circular(8),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.only(left: 12, right: 12, top: 20),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Profil Akun",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 12),
+                        Text(
+                          "Kode Toko",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight
+                                .bold, // Adjust the font weight as needed
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                        TextField(
+                          controller: _kodeTokoController,
+                          readOnly: true,
+                          style: TextStyle(color: Colors.deepOrange),
+                          decoration: InputDecoration(
+                            hintText: 'Role',
+                            hintStyle: TextStyle(color: Colors.deepOrange),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.transparent),
+                            ),
+                          ),
+                        ),
+                        FutureBuilder<bool>(
+                          future: _checkKodeCabang(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              // While the Future is still running, you can show a loading indicator.
+                              return Container();
+                            } else if (snapshot.hasError) {
+                              // If there's an error in the Future, handle it accordingly.
+                              return Text('Error: ${snapshot.error}');
+                            } else if (snapshot.data == false) {
+                              // If the Future result is true, show the Column with Text and TextField.
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 16),
+                                  Text(
+                                    "Kode Cabang",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                  TextField(
+                                    readOnly: true,
+                                    controller: _kodeCabangController,
+                                    style: TextStyle(color: Colors.deepOrange),
+                                    decoration: InputDecoration(
+                                      hintText: "Nama Cabang",
+                                      hintStyle:
+                                          TextStyle(color: Colors.white54),
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide:
+                                            BorderSide(color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              // If the Future result is false, don't show anything.
+                              return Container();
+                            }
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          "Username",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                        TextField(
+                          controller: _usernameController,
+                          style: TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            hintText: 'Username',
+                            hintStyle: TextStyle(color: Colors.white54),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        FutureBuilder<bool>(
+                          future: _checkKodeCabang(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              // While the Future is still running, you can show a loading indicator.
+                              return Container();
+                            } else if (snapshot.hasError) {
+                              // If there's an error in the Future, handle it accordingly.
+                              return Text('Error: ${snapshot.error}');
+                            } else if (snapshot.data == true) {
+                              // If the Future result is true, show the Column with Text and TextField.
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 16),
+                                  Text(
+                                    "Password",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                  TextField(
+                                    controller: _passwordController,
+                                    obscureText: true,
+                                    style: TextStyle(color: Colors.white),
+                                    decoration: InputDecoration(
+                                      hintText: 'Password',
+                                      hintStyle:
+                                          TextStyle(color: Colors.white54),
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide:
+                                            BorderSide(color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              // If the Future result is false, don't show anything.
+                              return Container();
+                            }
+                          },
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          "Status",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight
+                                .bold, // Adjust the font weight as needed
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                        TextField(
+                          controller: _roleController,
+                          readOnly: true,
+                          style: TextStyle(color: Colors.deepOrange),
+                          decoration: InputDecoration(
+                            hintText: 'Role',
+                            hintStyle: TextStyle(color: Colors.deepOrange),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.transparent),
+                            ),
+                          ),
+                        ),
+                        FutureBuilder<bool>(
+                          future: _checkKodeCabang(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              // While the Future is still running, you can show a loading indicator.
+                              return Container();
+                            } else if (snapshot.hasError) {
+                              // If there's an error in the Future, handle it accordingly.
+                              return Text('Error: ${snapshot.error}');
+                            } else if (snapshot.data == true) {
+                              // If the Future result is true, show the Column with Text and TextField.
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          _submitForm();
+                                        },
+                                        child: Text(
+                                          'Simpan',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          padding: EdgeInsets.all(20),
+                                          primary: Colors.deepOrange,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              );
+                            } else {
+                              // If the Future result is false, don't show anything.
+                              return Container();
+                            }
+                          },
+                        ),
+                      ],
                     ),
                   ),
-                  child: const Row(
-                    children: [
-                      Icon(Icons.logout, color: Colors.deepOrange),
-                    ],
-                  ))
-            ]),
-          )
-        ],
-      ))
-    ]);
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 20),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                            onPressed: () {
+                              _logoutProcess();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                side: const BorderSide(
+                                  color: Colors.deepOrange,
+                                  width: 2,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: const Row(
+                              children: [
+                                Icon(Icons.logout, color: Colors.deepOrange),
+                              ],
+                            ))
+                      ]),
+                )
+              ],
+            )),
+      ]),
+    ]));
   }
 
   void _logoutProcess() async {

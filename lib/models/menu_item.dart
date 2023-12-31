@@ -27,7 +27,7 @@ List<MenuItem> convertMenus(List<dynamic> menusData) {
       menuId: menuItemData['menuId'],
       menuName: menuItemData['menuName'],
       quantity: menuItemData['quantity'],
-      price: menuItemData['price'],
+      price: menuItemData['price'].toDouble(),
     );
   }).toList();
 }

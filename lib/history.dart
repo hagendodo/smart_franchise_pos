@@ -24,7 +24,6 @@ class _HistoryState extends State<History> {
   Future<void> fetchData() async {
     try {
       Map<String, dynamic> userData = await UserDataService.getUserData();
-      print(userData);
       String queryString =
           "kodeToko=${userData['kodeToko']}&kodeCabang=${userData['kodeCabang'] ?? ''}";
       // Make a GET request using Dio
@@ -61,8 +60,7 @@ class _HistoryState extends State<History> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      flex: 5,
+    return SingleChildScrollView(
       child: Column(
         children: [
           wTopMenu(action: Container(), context: context),
@@ -80,7 +78,7 @@ class _HistoryState extends State<History> {
                 return Text('Error: ${snapshot.error}');
               } else {
                 return Expanded(
-                  child: ListView(
+                  child: Column(
                     children: menus,
                   ),
                 );
@@ -136,7 +134,7 @@ class _HistoryState extends State<History> {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  formatCurrency(price),
+                  formatCurrency(price.toDouble()),
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
