@@ -15,5 +15,5 @@
 <li>Raden Ibnu Huygenz Widodo (1217050116)</li>
 <li>Rifky Zaini Faroj (1217050122)</li>
 <li>Rifqi Syekhi Marsaputra (1217050123)</li>
-<li></li>
+<li>Sigit Julianto (1217050132)</li>
 </ul>
