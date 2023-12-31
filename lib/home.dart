@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final Dio dio = Dio();
+  bool isLoading = false;
   List<Widget> menuItems = [];
 
   @override
@@ -23,48 +24,55 @@ class _HomePageState extends State<HomePage> {
     bool isMobile = MediaQuery.of(context).size.width < 1200;
     bool isPC = MediaQuery.of(context).size.width >= 1200;
 
-    return FutureBuilder(
-      future: fetchData(), // Assuming fetchData returns a Future<List<dynamic>>
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Container(
-            height: MediaQuery.of(context).size.height * 0.5,
+    return isLoading
+        ? Container(
+            height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                flex: 20,
-                child: Column(
+          )
+        : FutureBuilder(
+            future:
+                fetchData(), // Assuming fetchData returns a Future<List<dynamic>>
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Container(
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  width: MediaQuery.of(context).size.width,
+                  child: CircularProgressIndicator(),
+                );
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 20),
-                      child: wTopMenu(
-                        context: context,
-                        action: Container(),
+                    Expanded(
+                      flex: 20,
+                      child: Column(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 20),
+                            child: wTopMenu(
+                              context: context,
+                              action: Container(),
+                            ),
+                          ),
+                          Expanded(
+                            child: GridView.count(
+                                crossAxisCount: isMobile ? 1 : 3,
+                                childAspectRatio: isPC ? (2 / 1.4) : (1 / 1),
+                                children: menuItems),
+                          ),
+                        ],
                       ),
                     ),
-                    Expanded(
-                      child: GridView.count(
-                          crossAxisCount: isMobile ? 1 : 3,
-                          childAspectRatio: isPC ? (2 / 1.4) : (1 / 1),
-                          children: menuItems),
-                    ),
+                    Expanded(flex: 1, child: Container()),
                   ],
-                ),
-              ),
-              Expanded(flex: 1, child: Container()),
-            ],
+                );
+              }
+            },
           );
-        }
-      },
-    );
   }
 
   Future<void> fetchData() async {
@@ -94,6 +102,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> deleteData(String itemId) async {
+    setState(() {
+      isLoading = true;
+    });
     try {
       // Make a DELETE request using Dio
       Response response = await dio.delete('$apiUrl/api/items/$itemId');
@@ -220,6 +231,7 @@ class _HomePageState extends State<HomePage> {
                             TextButton(
                               onPressed: () {
                                 deleteData(id);
+                                Navigator.pop(context);
                               },
                               child: Text('Delete'),
                             ),

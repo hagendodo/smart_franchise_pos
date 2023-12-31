@@ -6,7 +6,6 @@ import 'package:smart_franchise_pos/models/order_data.dart';
 import 'package:smart_franchise_pos/services/format_service.dart';
 import 'package:smart_franchise_pos/services/user_data.dart';
 import 'package:shortid/shortid.dart';
-import 'components/topmenu.dart';
 import 'package:input_quantity/input_quantity.dart';
 import 'strings/environment.dart';
 
@@ -19,6 +18,7 @@ class Checkout extends StatefulWidget {
 
 class _CheckoutState extends State<Checkout> {
   double totalValue = 0;
+  bool isLoading = false;
   List<MenuItem> menuItems = [];
   List<Widget> menus = [];
   Dio dio = Dio();
@@ -42,6 +42,10 @@ class _CheckoutState extends State<Checkout> {
       // Show an error message or handle validation as needed
       return;
     }
+
+    setState(() {
+      isLoading = true;
+    });
 
     // Create Dio instance
     final dio = Dio();
@@ -129,135 +133,143 @@ class _CheckoutState extends State<Checkout> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      child: Column(
-        children: [
-          const SizedBox(height: 20),
-          menuItems.isEmpty
-              ? FutureBuilder(
-                  future: fetchData(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.5,
-                        width: MediaQuery.of(context).size.width,
-                        child: const CircularProgressIndicator(),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else {
-                      return Expanded(
+    return isLoading
+        ? Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: CircularProgressIndicator(),
+          )
+        : Container(
+            height: MediaQuery.of(context).size.height,
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                menuItems.isEmpty
+                    ? FutureBuilder(
+                        future: fetchData(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.5,
+                              width: MediaQuery.of(context).size.width,
+                              child: const CircularProgressIndicator(),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else {
+                            return Expanded(
+                              child: ListView(
+                                children: menus,
+                              ),
+                            );
+                          }
+                        },
+                      )
+                    : Expanded(
                         child: ListView(
                           children: menus,
                         ),
-                      );
-                    }
-                  },
-                )
-              : Expanded(
-                  child: ListView(
-                    children: menus,
-                  ),
-                ),
-          menuItems.isNotEmpty
-              ? Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    color: const Color(0xff1f2029),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.white,
-                        offset:
-                            Offset(0, -1), // Negative y offset for top shadow
-                        blurRadius: 3,
                       ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      Container(
+                menuItems.isNotEmpty
+                    ? Container(
+                        padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: const Color.fromARGB(137, 92, 92, 92),
-                        ),
-                        child: TextField(
-                          controller: _nameController,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
-                          decoration: InputDecoration(
-                            contentPadding:
-                                EdgeInsets.only(bottom: 6, left: 12),
-                            hintText: 'Atas Nama',
-                            hintStyle:
-                                TextStyle(color: Colors.white54, fontSize: 14),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(vertical: 20),
-                        height: 2,
-                        width: double.infinity,
-                        color: Colors.white,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Total',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                          Text(
-                            'Rp ${totalValue.toStringAsFixed(2)}', // Format the total value as needed
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
+                          borderRadius: BorderRadius.circular(14),
+                          color: const Color(0xff1f2029),
+                          boxShadow: const [
+                            BoxShadow(
                               color: Colors.white,
+                              offset: Offset(
+                                  0, -1), // Negative y offset for top shadow
+                              blurRadius: 3,
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 15),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepOrange,
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        onPressed: () {
-                          _submitForm(context);
-                        },
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(width: 6),
-                            Text(
-                              'Pesan',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                              ),
-                            )
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                )
-              : Container(),
-        ],
-      ),
-    );
+                        child: Column(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: const Color.fromARGB(137, 92, 92, 92),
+                              ),
+                              child: TextField(
+                                controller: _nameController,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                ),
+                                decoration: InputDecoration(
+                                  contentPadding:
+                                      EdgeInsets.only(bottom: 6, left: 12),
+                                  hintText: 'Atas Nama',
+                                  hintStyle: TextStyle(
+                                      color: Colors.white54, fontSize: 14),
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.white),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.symmetric(vertical: 20),
+                              height: 2,
+                              width: double.infinity,
+                              color: Colors.white,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Total',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                                Text(
+                                  'Rp ${totalValue.toStringAsFixed(2)}', // Format the total value as needed
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 15),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.deepOrange,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 15),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              onPressed: () {
+                                _submitForm(context);
+                              },
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(width: 6),
+                                  Text(
+                                    'Pesan',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : Container(),
+              ],
+            ),
+          );
   }
 
   Widget _itemOrder({

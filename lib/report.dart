@@ -14,6 +14,8 @@ class Report extends StatefulWidget {
 
 class _ReportState extends State<Report> {
   double totalValue = 0;
+  double rataRata = 0;
+  String cabangTerbaik = "";
   List<Widget> reportItems = [];
   Dio dio = Dio();
 
@@ -28,21 +30,36 @@ class _ReportState extends State<Report> {
       List<dynamic> responseData = response.data;
 
       Map<String, int> resultMap = {};
+      double innerTotalValue = 0;
 
       for (var entry in responseData) {
         String kode = entry['kodeCabang'];
         int total = entry['totalHarga'] ?? 0;
         resultMap[kode] = (resultMap[kode] ?? 0) + total;
+        innerTotalValue += total;
       }
 
       List<Map<String, dynamic>> outputArray = resultMap.entries
           .map((entry) => {"kodeCabang": entry.key, "totalHarga": entry.value})
           .toList();
 
+      String bestCabang = "";
+      int biggest = 0;
+      for (var entry in outputArray) {
+        if (entry['totalHarga'] > biggest) {
+          biggest = entry['totalHarga'];
+          bestCabang = entry['kodeCabang'];
+        }
+      }
+
+      totalValue = innerTotalValue;
+      rataRata = innerTotalValue / outputArray.length;
+      cabangTerbaik = bestCabang;
+
       // Create _item widgets based on the fetched data
       reportItems = outputArray.map((itemData) {
         return _itemOrder(
-            cabang: itemData['namaCabang'] ?? "",
+            cabang: itemData['namaCabang'] ?? "Total Pendapatan",
             tanggal: itemData['kodeCabang'],
             total: itemData['totalHarga'].toDouble());
       }).toList();
@@ -97,18 +114,18 @@ class _ReportState extends State<Report> {
                         width: double.infinity,
                         color: Colors.white,
                       ),
-                      const Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'Penjualan Terbaik',
+                          const Text(
+                            'Cabang Penjualan Terbaik',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white),
                           ),
                           Text(
-                            '11-23',
-                            style: TextStyle(
+                            cabangTerbaik,
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
@@ -116,18 +133,18 @@ class _ReportState extends State<Report> {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      const Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
+                          const Text(
                             'Rata-Rata Pendapatan',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white),
                           ),
                           Text(
-                            'Rp. 13.000.000',
-                            style: TextStyle(
+                            formatCurrency(rataRata),
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
@@ -145,7 +162,8 @@ class _ReportState extends State<Report> {
                                 color: Colors.white),
                           ),
                           Text(
-                            'Rp ${totalValue.toStringAsFixed(2)}', // Format the total value as needed
+                            formatCurrency(
+                                totalValue), // Format the total value as needed
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
@@ -197,7 +215,7 @@ class _ReportState extends State<Report> {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  "Cabang $cabang",
+                  cabang,
                   style: const TextStyle(
                     fontSize: 15,
                     color: Colors.white54,

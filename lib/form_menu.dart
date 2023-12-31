@@ -21,6 +21,7 @@ class _FormMenuState extends State<FormMenu> {
   File? _image;
   final ImagePicker _picker = ImagePicker();
   MenuForm? menuForm;
+  bool isLoading = false;
 
   _FormMenuState({MenuForm? menuFormItem}) {
     menuForm = menuFormItem;
@@ -57,197 +58,206 @@ class _FormMenuState extends State<FormMenu> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(children: [
-        wTopMenu(
-          context: context,
-          action: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const MainPage(
-                      movePage: "Menus",
+    return isLoading
+        ? Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: CircularProgressIndicator(),
+          )
+        : SingleChildScrollView(
+            child: Column(children: [
+              wTopMenu(
+                context: context,
+                action:
+                    Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MainPage(
+                            movePage: "Menus",
+                          ),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.deepOrange, // Button color
+                    ),
+                    child: const Row(
+                      children: [
+                        Text(
+                          "Kembali",
+                          selectionColor: Colors.white,
+                        )
+                      ],
                     ),
                   ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                primary: Colors.deepOrange, // Button color
+                ]),
               ),
-              child: const Row(
-                children: [
-                  Text(
-                    "Kembali",
-                    selectionColor: Colors.white,
-                  )
-                ],
-              ),
-            ),
-          ]),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            color: const Color(0xff1f2029),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.white,
-                offset: Offset(0, 1), // Negative y offset for top shadow
-                blurRadius: 1,
-              ),
-            ],
-          ),
-          padding: const EdgeInsets.all(16),
-          margin: const EdgeInsets.only(left: 12, right: 12, top: 20),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Form Menu",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 32),
-                Text(
-                  "Nama Menu",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight:
-                        FontWeight.bold, // Adjust the font weight as needed
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-                TextField(
-                  controller: _nameController,
-                  style: TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    hintText: 'xxxx',
-                    hintStyle: TextStyle(color: Colors.white54),
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  color: const Color(0xff1f2029),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.white,
+                      offset: Offset(0, 1), // Negative y offset for top shadow
+                      blurRadius: 1,
                     ),
-                  ),
-                ),
-                SizedBox(height: 16),
-                Text(
-                  "Harga",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight:
-                        FontWeight.bold, // Adjust the font weight as needed
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-                TextField(
-                  controller: _priceController,
-                  style: TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    hintText: 'Rp. xxx',
-                    hintStyle: TextStyle(color: Colors.white54),
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 16),
-                Text(
-                  "Upload Method",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-                Row(
-                  children: [
-                    Text("From URL", style: TextStyle(color: Colors.white)),
-                    Switch(
-                      value: _uploadFromUrl,
-                      onChanged: (value) {
-                        setState(() {
-                          _uploadFromUrl = value;
-                        });
-                      },
-                    ),
-                    Text("From File", style: TextStyle(color: Colors.white)),
                   ],
                 ),
-                SizedBox(height: 16),
-                if (!_uploadFromUrl) ...[
-                  Text(
-                    "Image URL",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
-                  TextField(
-                    controller: _imageUrlController,
-                    style: TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: 'https://example.com/image.jpg',
-                      hintStyle: TextStyle(color: Colors.white54),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                ] else ...[
-                  GestureDetector(
-                    onTap: _getImage,
-                    child: Container(
-                      padding: const EdgeInsets.all(5),
-                      color: Colors.deepOrange,
-                      child: Text(
-                        'Chooses Image',
+                padding: const EdgeInsets.all(16),
+                margin: const EdgeInsets.only(left: 12, right: 12, top: 20),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Form Menu",
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 16,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                ],
-                buildImageWidget(),
-                const SizedBox(height: 16),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        _editMode
-                            ? _editSubmitForm(menuForm?.idMenu)
-                            : _submitForm();
-                      },
-                      child: Text('Simpan'),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.all(20),
-                        primary: Colors.deepOrange,
+                      SizedBox(height: 32),
+                      Text(
+                        "Nama Menu",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight
+                              .bold, // Adjust the font weight as needed
+                        ),
+                        textAlign: TextAlign.left,
                       ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-        )
-      ]),
-    );
+                      TextField(
+                        controller: _nameController,
+                        style: TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          hintText: 'xxxx',
+                          hintStyle: TextStyle(color: Colors.white54),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        "Harga",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight
+                              .bold, // Adjust the font weight as needed
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                      TextField(
+                        controller: _priceController,
+                        style: TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          hintText: 'Rp. xxx',
+                          hintStyle: TextStyle(color: Colors.white54),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        "Upload Method",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                      Row(
+                        children: [
+                          Text("From URL",
+                              style: TextStyle(color: Colors.white)),
+                          Switch(
+                            value: _uploadFromUrl,
+                            onChanged: (value) {
+                              setState(() {
+                                _uploadFromUrl = value;
+                              });
+                            },
+                          ),
+                          Text("From File",
+                              style: TextStyle(color: Colors.white)),
+                        ],
+                      ),
+                      SizedBox(height: 16),
+                      if (!_uploadFromUrl) ...[
+                        Text(
+                          "Image URL",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                        TextField(
+                          controller: _imageUrlController,
+                          style: TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            hintText: 'https://example.com/image.jpg',
+                            hintStyle: TextStyle(color: Colors.white54),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                      ] else ...[
+                        GestureDetector(
+                          onTap: _getImage,
+                          child: Container(
+                            padding: const EdgeInsets.all(5),
+                            color: Colors.deepOrange,
+                            child: Text(
+                              'Chooses Image',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                      ],
+                      buildImageWidget(),
+                      const SizedBox(height: 16),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              _editMode
+                                  ? _editSubmitForm(menuForm?.idMenu)
+                                  : _submitForm();
+                            },
+                            child: Text('Simpan'),
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.all(20),
+                              primary: Colors.deepOrange,
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              )
+            ]),
+          );
   }
 
   Widget buildImageWidget() {
@@ -307,6 +317,9 @@ class _FormMenuState extends State<FormMenu> {
   // }
 
   Future<void> _submitForm() async {
+    setState(() {
+      isLoading = true;
+    });
     // Validate form fields
     if (_nameController.text.isEmpty || _priceController.text.isEmpty) {
       // Show an error message or handle validation as needed
@@ -355,6 +368,9 @@ class _FormMenuState extends State<FormMenu> {
   }
 
   Future<void> _editSubmitForm(id) async {
+    setState(() {
+      isLoading = true;
+    });
     // Validate form fields
     if (_nameController.text.isEmpty || _priceController.text.isEmpty) {
       // Show an error message or handle validation as needed
