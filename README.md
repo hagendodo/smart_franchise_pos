@@ -6,7 +6,7 @@
 
 <p>Link Playstore: <a href="https://play.google.com/store/apps/details?id=org.anugrah_kos.smart_franchise_pos">Disini</a></p>
 
-<p>Link Pitch Deck: <a href="">Disini</a></p>
+<p>Link Pitch Deck: <a href="https://docs.google.com/presentation/d/1wxEhC3eHdqyGhZ0nG1bG0Y9k4QWmR6q5q1G-dcjDj2c/edit?usp=sharing">Disini</a></p>
 
 <p>Link Presentasi Pitch Dek : <a href="">Disini</a></p>
 
