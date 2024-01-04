@@ -2,7 +2,7 @@
 
 <p>Smart Franchise POS adalah solusi kasir pintar yang dirancang khusus untuk memenuhi kebutuhan bisnis franchise Anda. Dengan fitur-fitur canggih yang mudah digunakan, aplikasi ini membantu pemilik bisnis dan kasir di setiap cabang untuk mengelola transaksi dan melacak kinerja dengan lebih efisien.</p>
 
-<p>REST API kami buat secara mandiri karena menyesuaikan kebutuhan, terdapat pada repo berikut: <a href="https://github.com/hagendodo/api-flutter-pos" target="_blank">api-flutter-pos</a></p>
+<p><b>REST API</b> kami buat secara mandiri karena menyesuaikan kebutuhan, terdapat pada repo berikut: <a href="https://github.com/hagendodo/api-flutter-pos" target="_blank">api-flutter-pos</a></p>
 
 <p>Link Playstore: <a href="https://play.google.com/store/apps/details?id=org.anugrah_kos.smart_franchise_pos" target="_blank">Disini</a></p>
 
