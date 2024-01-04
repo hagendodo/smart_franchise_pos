@@ -8,7 +8,9 @@
 
 <p>Link Pitch Deck: <a href="https://docs.google.com/presentation/d/1wxEhC3eHdqyGhZ0nG1bG0Y9k4QWmR6q5q1G-dcjDj2c/edit?usp=sharing">Disini</a></p>
 
-<p>Link Presentasi Pitch Dek : <a href="">Disini</a></p>
+<p>Link Presentasi Pitch Dek : <a href="https://youtu.be/0jF79fzkh8I">Disini</a></p>
+
+<p>Link Demo App : <a href="https://youtu.be/0jF79fzkh8I">Disini</a></p>
 
 ### Anggota Kelompok
 <ul>
